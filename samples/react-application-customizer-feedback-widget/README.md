@@ -46,6 +46,10 @@ Create a SharePoint custom list Feedbacks in the SPO site where this application
 | Employee_MailId | Text |
 | Employee_Name | Text |
 | Comment | Multi-line Text |
+| Site_URL | URL |
+| Sentiment | Text
+
+Make sure to update the /config/serve.json with your tenant 'pageUrl'
 
 > **Optional:** Unhide the default column `Created` to capture the submitted date.
 
@@ -58,6 +62,8 @@ Create a SharePoint custom list Feedbacks in the SPO site where this application
 | Version | Date             | Comments        |
 | ------- | ---------------- | --------------- |
 | 1.0     | July 02, 2023   | Initial release  |
+| 2.0     | September 25, 2024   | Adding Site URL   |
+
 
 ## Minimal Path to Awesome⚡
 
@@ -66,6 +72,8 @@ Create a SharePoint custom list Feedbacks in the SPO site where this application
 - in the command-line run:
   - `npm install`
   - `gulp serve`
+  - `gulp trust-dev-cert` to 
+
 
 ## Debug URL for Testing
 

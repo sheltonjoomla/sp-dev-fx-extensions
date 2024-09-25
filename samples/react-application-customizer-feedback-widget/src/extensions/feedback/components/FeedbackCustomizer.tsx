@@ -4,9 +4,13 @@ import { BiMessageSquareDetail } from "react-icons/bi";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { Text } from "@fluentui/react/lib";
 
+
 import styles from "./FeedbackCustomizer.module.scss";
 import { Sp } from "../../../Environment/Env";
 import { SuccessPage } from "./SuccessPage";
+// import { Site } from "@pnp/sp/sites";
+import Sentiment from 'sentiment';
+
 
 export default function FeedbackCustomizer() {
   const [open, setOpen] = useState(false);
@@ -15,7 +19,7 @@ export default function FeedbackCustomizer() {
   const [feedbackComment, setfeedbackComment] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successFlag, setSuccessFlag] = useState(false);
-  const [currentsiteUrl, setSiteUrl] = useState("");
+  const [currentSiteUrl, setSiteUrl] = useState("");
 
   const handleOpen = () => {
     setOpen(true);
@@ -52,7 +56,18 @@ export default function FeedbackCustomizer() {
     setfeedbackComment(event.target.value);
   };
 
+  // Remove Unnecessary Query Parameters from URL 
+  const cleanUrl = (url) => {
+    const parsedUrl = new URL(url);
+    return parsedUrl.origin + parsedUrl.pathname;
+};
+  
   const handleFeedbackSubmit = async () => {
+    const sentiment = new Sentiment();
+    const sentimentResult = sentiment.analyze(feedbackComment);
+    const sentimentCategory = sentimentResult.score >= 0 ? 'Positive' : 'Negative';
+    const encodedUrl = encodeURI(cleanUrl(currentSiteUrl));
+    
     if (feedbackComment.trim() === "") {
       setErrorMessage("Comment can't be empty");
     } else if (feedbackComment.length < 30) {
@@ -64,12 +79,18 @@ export default function FeedbackCustomizer() {
           Employee_Name: userName,
           Employee_MailId: currentUserMail,
           Comment: feedbackComment,
+          Site_URL: {
+            // __metadata: { type: 'SP.FieldUrlValue' },
+            Url: encodedUrl, 
+            Description: "Link to the site" // Description of the URL
+          },
+          Sentiment: sentimentCategory,
         })
         .then(() => {
           console.log("Message sent successfully");
         })
-        .catch((err) => console.log(err));
-
+        .catch((err) => console.log('Error posting to SharePoint:', err));
+  
       setErrorMessage("");
       setfeedbackComment("");
       setSuccessFlag(true);
@@ -78,11 +99,11 @@ export default function FeedbackCustomizer() {
 
   return (
     <>
-      {currentsiteUrl.includes("viewlsts") ? (
+      {currentSiteUrl.includes("viewlsts") ? (
         <div></div>
-      ) : currentsiteUrl.includes("AllItems") ? (
+      ) : currentSiteUrl.includes("AllItems") ? (
         <div></div>
-      ) : currentsiteUrl.includes("Forms") ? (
+      ) : currentSiteUrl.includes("Forms") ? (
         <div></div>
       ) : (
         <div className={styles["feedback-widget-container"]}>
@@ -93,7 +114,7 @@ export default function FeedbackCustomizer() {
             <BiMessageSquareDetail
               style={{ width: "23px", height: "23px", paddingBottom: "4px" }}
             />
-            <Text className={styles["text-style"]}>Feedback</Text>
+            <Text className={styles["text-style"]}>Feedback!!</Text>
           </div>
           {open && (
             <div className={styles["popup-container"]}>
@@ -107,7 +128,7 @@ export default function FeedbackCustomizer() {
                     fontFamily: "Calibre",
                   }}
                 >
-                  Submit your feedback here!
+                  Submit your feedback here!!!
                 </Text>
                 <RiCloseCircleLine
                   style={{

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/sentiment": "^5.0.4",
+    "sentiment": "^5.0.2"
+  }
+}
